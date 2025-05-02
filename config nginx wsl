@@ -1,0 +1,28 @@
+server {
+    listen 80;
+    server_name 172.22.6.11;
+    return 301 https://$host$request_uri;  # Redirect HTTP ke HTTPS
+}
+
+server {
+    listen 443 ssl;
+    server_name yaridkibana.com www.yaridkibana.com;
+
+    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
+    ssl_prefer_server_ciphers on;
+
+    auth_basic "Restricted Access";
+
+    location / {
+        proxy_pass http://localhost:5601;  # Arahkan ke Kibana
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
