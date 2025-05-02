@@ -1,0 +1,26 @@
+output {
+  if "suricata" in [tags] {
+    # Suricata logs go to suricata-* index (ignore pipelines)
+    elasticsearch {
+      hosts => ["localhost:9200"]
+      index => "suricata-%{+YYYY.MM.dd}"
+    }
+  }
+  else if [@metadata][pipeline] {
+    # Non-Suricata logs with pipelines
+    elasticsearch {
+      hosts => ["localhost:9200"]
+      manage_template => false
+      index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+      pipeline => "%{[@metadata][pipeline]}"
+    }
+  }
+  else {
+    # Fallback for all other logs
+    elasticsearch {
+      hosts => ["localhost:9200"]
+      manage_template => false
+      index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+    }
+  }
+}
