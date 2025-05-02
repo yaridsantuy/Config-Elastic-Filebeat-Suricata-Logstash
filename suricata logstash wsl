@@ -1,0 +1,18 @@
+filter {
+  if "suricata" in [tags] {
+    json {
+      source => "message"
+      target => "suricata"
+      skip_on_invalid_json => true
+    }
+
+    date {
+      match => ["[suricata][timestamp]", "ISO8601"]
+      target => "@timestamp"
+    }
+
+    mutate {
+      add_field => { "event.module" => "suricata" }
+    }
+  }
+}
