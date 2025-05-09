@@ -1,0 +1,43 @@
+# ============================== Filebeat inputs ===============================
+filebeat.inputs:
+# Tidak pakai input manual karena sudah pakai module Suricata
+- type: filestream
+  id: my-filestream-id
+  enabled: false
+  paths:
+    - "C:\\Program Files\\Suricata\\log\\eve.json"
+
+# ============================== Filebeat modules ==============================
+filebeat.modules:
+  - module: suricata
+    eve:
+      enabled: true
+      var.paths:
+        - "C:\\Program Files\\Suricata\\log\\eve.json"
+
+# ======================= Elasticsearch template setting =======================
+setup.template.json.enabled: true
+setup.template.json.path: "C:/Program Files/Filebeat/suricata.json"
+setup.template.json.name: suricata
+setup.template.pattern: "suricata-*"
+setup.template.overwrite: true
+setup.ilm.enabled: false
+
+# ================================== Output =====================================
+output.logstash:
+  hosts: ["172.22.6.11:5044"]
+
+#output.elasticsearch:
+ # hosts: ["http://172.22.6.11:9200"]
+
+# ================================== Processors =================================
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+# ============================== Logging (optional) ==============================
+#logging.level: debug
+#logging.selectors: ["*"]
