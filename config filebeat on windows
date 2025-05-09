@@ -24,11 +24,11 @@ setup.template.overwrite: true
 setup.ilm.enabled: false
 
 # ================================== Output =====================================
-#output.logstash:
- # hosts: ["172.22.6.11:5044"]
+output.logstash:
+  hosts: ["172.22.6.11:5044"]
 
-output.elasticsearch:
-  hosts: ["http://172.22.6.11:9200"]
+#output.elasticsearch:
+ # hosts: ["http://172.22.6.11:9200"]
 
 # ================================== Processors =================================
 processors:
