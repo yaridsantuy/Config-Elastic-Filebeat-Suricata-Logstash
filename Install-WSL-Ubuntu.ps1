@@ -31,4 +31,5 @@ Start-Process -FilePath "$env:TEMP\wsl_update_x64.msi" -Wait
 Write-Host "Setting Ubuntu-20.04 to use WSL version 2..."
 wsl --set-version Ubuntu-20.04 2
 
-Write-Host "`n[✔] WSL 2 dengan Ubuntu 20.04 telah berhasil diatur!"
+Write-Host "`n[Success] WSL 2 dengan Ubuntu 20.04 telah berhasil diatur!"
+
