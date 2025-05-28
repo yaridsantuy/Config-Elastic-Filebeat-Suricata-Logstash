@@ -1,26 +1,29 @@
 output {
   if "suricata" in [tags] {
-    # Suricata logs go to suricata-* index (ignore pipelines)
     elasticsearch {
-      hosts => ["localhost:9200"]
+      hosts => ["http://localhost:9200"]
       index => "suricata-%{+YYYY.MM.dd}"
+      template => "/etc/logstash/templates/suricata-template.json"
+      template_name => "suricata"
+      manage_template => true
     }
   }
   else if [@metadata][pipeline] {
-    # Non-Suricata logs with pipelines
     elasticsearch {
-      hosts => ["localhost:9200"]
-      manage_template => false
+      hosts => ["http://localhost:9200"]
       index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
       pipeline => "%{[@metadata][pipeline]}"
+      manage_template => false
     }
   }
   else {
-    # Fallback for all other logs
     elasticsearch {
-      hosts => ["localhost:9200"]
-      manage_template => false
+      hosts => ["http://localhost:9200"]
       index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+      manage_template => false
     }
   }
+
+  # Tambahan debug (opsional, bisa dihapus nanti)
+  stdout { codec => rubydebug }
 }
