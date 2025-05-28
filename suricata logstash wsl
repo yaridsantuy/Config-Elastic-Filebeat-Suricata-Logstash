@@ -1,18 +1,46 @@
 filter {
   if "suricata" in [tags] {
+    mutate {
+      remove_field => ["log", "agent", "fileset", "input"]
+    }
+
     json {
-      source => "message"
-      target => "suricata"
+      source => "[event][original]"
       skip_on_invalid_json => true
     }
 
+    mutate {
+      add_field => {
+        "event.category" => "network"
+        "event.kind" => "event"
+      }
+    }
+
     date {
-      match => ["[suricata][timestamp]", "ISO8601"]
+      match => ["timestamp", "ISO8601"]
       target => "@timestamp"
+      timezone => "Asia/Jakarta"
+    }
+
+    #  Rename parsed Suricata fields here
+    if [event_type] == "alert" {
+      mutate {
+        rename => {
+          "[alert][signature]" => "alert_signature"
+          "src_ip"             => "src_ip"
+          "dest_ip"            => "dst_ip"
+          "src_port"           => "src_port"
+          "dest_port"          => "dst_port"
+          "proto"              => "protocol"
+          "[alert][category]"  => "alert_category"
+          "[alert][severity]"  => "alert_severity"
+          "[dns][query][rrname][yarid]" => "dns_query_rrname_yarid"
+        }
+      }
     }
 
     mutate {
-      add_field => { "event.module" => "suricata" }
+      remove_field => ["[event][original]"]
     }
   }
 }
